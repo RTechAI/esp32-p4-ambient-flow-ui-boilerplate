@@ -1,7 +1,7 @@
 README
 # ESP32-P4 LVGL v9 UI Boilerplate — Cyberpunk Nexus Theme
 
-Hardware-proven ESP32-P4 LVGL v9 UI boilerplate featuring the **Cyberpunk Nexus** theme for the **Waveshare ESP32-P4-WIFI6-Touch-LCD-7B** (7-inch 1024×600).
+Hardware-proven ESP32-P4 LVGL v9 UI boilerplate featuring the **Ambient Flow** theme for the **Waveshare ESP32-P4-WIFI6-Touch-LCD-7B** (7-inch 1024×600).
 
 Designed with **ESP32-P4 UI Studio** and powered by the **ForgeUI One** runtime.
 
