@@ -1,131 +1,130 @@
-README
-# ESP32-P4 LVGL v9 UI Boilerplate — Cyberpunk Nexus Theme
+# Ambient Flow — ESP32-P4 LVGL 9 Touchscreen UI/HMI Boilerplate
 
-Hardware-proven ESP32-P4 LVGL v9 UI boilerplate featuring the **Ambient Flow** theme for the **Waveshare ESP32-P4-WIFI6-Touch-LCD-7B** (7-inch 1024×600).
+![Ambient Flow conceptual artwork](Splash%20esp32-p4-ambient-flow-ui-boilerplate.png)
 
-Designed with **ESP32-P4 UI Studio** and powered by the **ForgeUI One** runtime.
+An ESP32-P4 embedded UI/HMI boilerplate for the **Waveshare ESP32-P4-WIFI6-Touch-LCD-7B**: a 7-inch, 1024×600 MIPI DSI touchscreen using the EK79007 display controller and GT911 capacitive-touch controller. It is an ESP-IDF 5.5.4 project using LVGL 9.2.2.
 
-This repository provides a production-ready embedded HMI baseline that can be cloned, customised, built, and flashed directly to physical ESP32-P4 hardware.
+This repository provides a ForgeUI One runtime baseline and a generated single-page Ambient Flow LVGL interface for building and evaluating ESP32-P4 touchscreen applications. **Ambient Flow is this project's visual theme: it does not implement airflow sensing, HVAC control, environmental monitoring, air-quality measurement, or building automation.**
 
----
+## ForgeUI Ecosystem
 
-# Built with ESP32-P4 UI Studio
+ForgeUI is developed by [RTechAI](https://github.com/RTechAI).
 
-This project was visually designed and exported using **ESP32-P4 UI Studio**.
+The [ForgeUI website](https://forgeui.co.nz) is the official home of the ForgeUI embedded UI/HMI development ecosystem. ForgeUI Studio is the current visual embedded UI/HMI development environment for supported ESP32 hardware.
 
-ESP32-P4 UI Studio provides:
+[ForgeUI Hosted Studio](https://studio.forgeui.co.nz) is the hosted, browser-based ForgeUI Studio application and is available for public registration.
 
-- Visual drag-and-drop UI designer
-- AI-assisted layout generation
-- AI Hero Theme generation
-- Theme Manager
-- Asset Manager
-- Icon Browser
-- LVGL v9 code generation
-- Standalone ESP-IDF project export
-- Direct deployment to ForgeUI One
+RTechAI's GitHub organization hosts ForgeUI public repositories, hardware references, framework baselines, examples, and related open development work. This repository is a hardware-specific, theme-led ESP32-P4 boilerplate in that public reference work, retaining the earlier ForgeUI One runtime and ESP32-P4 UI Studio export lineage described below.
 
-Repository:
+## Overview
 
-https://github.com/RTechAI/esp32p4-ui-studio
+The checkout contains a native C ESP-IDF firmware project that starts the Waveshare BSP display and touch stack, initializes the ForgeUI runtime, and renders a generated LVGL screen. The generated screen uses an Ambient Flow background asset and creates periodic clock and Wi-Fi-status update callbacks.
 
----
+The enabled runtime configuration also includes ESP-Hosted Wi-Fi via the board's ESP32-C6, DS3231-backed retained time, and SD-card initialization. Audio support code and dependencies are present, but audio is disabled in the current project configuration.
 
-# Powered by ForgeUI One
+## Hardware Target
 
-This project runs on the **ForgeUI One** embedded runtime.
+| Item | Verified target |
+| --- | --- |
+| Board | Waveshare ESP32-P4-WIFI6-Touch-LCD-7B |
+| SoC | Espressif ESP32-P4 |
+| Display | 7-inch 1024×600 MIPI DSI, EK79007 |
+| Touch | GT911 capacitive touch |
+| Wireless path | ESP-Hosted over SDIO to the onboard ESP32-C6 through `esp_wifi_remote` |
+| Runtime peripherals enabled | DS3231 RTC and SD card |
 
-ForgeUI One provides:
+The configured boot order initializes hosted Wi-Fi before mounting SD storage because those paths share board resources.
 
-- ESP-IDF project structure
-- LVGL v9 runtime
-- EK79007 display support
-- GT911 capacitive touch support
-- Generated UI integration
-- Hardware-proven runtime architecture
-- Single-page application framework
+## Software Stack
 
-Repository:
+| Component | Locked version |
+| --- | --- |
+| ESP-IDF | 5.5.4 |
+| LVGL | 9.2.2 |
+| Waveshare board-support package | 1.0.2 |
+| `esp_lvgl_port` | 2.7.2 |
+| `esp_hosted` | 2.9.7 |
+| `esp_wifi_remote` | 1.3.0 |
 
-https://github.com/RTechAI/ForgeUI-One
+The complete resolved component set is recorded in [`dependencies.lock`](dependencies.lock).
 
----
+## Ambient Flow UI and Demonstration Data
 
-# Features
+Ambient Flow refers to the pale-blue flowing-line visual treatment used by the generated UI asset. The checked-in generated screen contains no environmental, airflow, temperature, humidity, air-quality, or ventilation values.
 
-- Hardware-proven on ESP32-P4
-- Native C firmware
-- ESP-IDF v5.5.x
-- LVGL v9
-- 1024×600 display support
-- GT911 touch support
-- Single-page HMI architecture
-- Cyberpunk Nexus hero theme
-- Production-ready project structure
-- Ready for customisation
+Its time display is formatted from the runtime clock, with the configured DS3231 backend used for retained time and NVS as fallback. Its Wi-Fi text is updated from the runtime Wi-Fi status and assigned IP address. The local hero above is conceptual/generated artwork; it is neither a physical-hardware photograph nor proof of a running device.
 
----
+## Hardware and Runtime Baseline
 
-# Hardware
+`main/` contains the ForgeUI One runtime modules and the generated Studio export. The active configuration enables:
 
-Validated on:
+- LVGL display/touch initialization through the Waveshare BSP
+- ESP-Hosted/ESP32-C6 Wi-Fi support
+- DS3231 RTC integration and NVS time fallback
+- SD-card mount, read/write test, and ForgeUI storage helpers
 
-- Waveshare ESP32-P4-WIFI6-Touch-LCD-7B
-- ESP32-P4
-- EK79007 MIPI-DSI Display
-- GT911 Capacitive Touch
+Audio includes an available speaker-test implementation, but `FORGEUI_ENABLE_AUDIO` is set to `0`; it is not active in this baseline.
 
----
+## Project Structure
 
-# Quick Start
+```text
+.
+├── main/                         # Application, ForgeUI runtime, and generated UI export
+│   ├── 90_Studio_Export.c         # Generated single-page LVGL UI
+│   ├── 30_WIFI.c                  # ESP-Hosted Wi-Fi backend
+│   ├── 20_RTC.c                   # DS3231/NVS time backend
+│   └── 40_SD.c                    # SD-card storage backend
+├── components/bsp_extra/          # Board-specific audio/BSP extension
+├── docs/                          # Setup references and UI assets
+├── dependencies.lock              # Resolved ESP-IDF component versions
+├── sdkconfig.defaults             # ESP32-P4 project defaults
+└── CMakeLists.txt                 # ESP-IDF project definition
+```
 
-Set the target:
+## Build and Flash
+
+Install and activate an ESP-IDF 5.5.4 environment, then from the repository root:
 
 ```bash
 idf.py set-target esp32p4
-```
-
-Build:
-
-```bash
 idf.py build
-```
-
-Flash:
-
-```bash
 idf.py flash monitor
 ```
 
----
+Use the Waveshare ESP32-P4-WIFI6-Touch-LCD-7B target described above. No build or flash was performed as part of this documentation update.
 
-# About This Boilerplate
+## Historical ForgeUI Context
 
-This repository is one of the official **ForgeUI One UI Boilerplates**.
+Source comments and the generated export identify this project as an earlier **ESP32-P4 UI Studio** export running on the **ForgeUI One** runtime. These are historical lineage references, not claims that the current Hosted Studio generated this checkout.
 
-Each boilerplate is:
+- [Historical ESP32-P4 UI Studio](https://github.com/RTechAI/esp32p4-ui-studio)
+- [ForgeUI One](https://github.com/RTechAI/ForgeUI-One)
 
-- Hardware proven
-- Generated using ESP32-P4 UI Studio
-- Powered by ForgeUI One
-- Designed as a production-ready starting point for embedded touchscreen products
+## Current ForgeUI Studio
 
----
+The [ForgeUI website](https://forgeui.co.nz) is the official home of the ForgeUI embedded UI/HMI development ecosystem. ForgeUI Studio is the current visual embedded UI/HMI development environment for supported ESP32 hardware.
 
-# Support
+[ForgeUI Hosted Studio](https://studio.forgeui.co.nz) is the hosted, browser-based ForgeUI Studio application and is available for public registration.
 
-Questions, feature requests, and bug reports are welcome.
+## Related ForgeUI Projects
 
-Studio:
+- [ForgeUI One](https://github.com/RTechAI/ForgeUI-One) — historical runtime lineage
+- [Historical ESP32-P4 UI Studio](https://github.com/RTechAI/esp32p4-ui-studio) — historical export-tool lineage
+- [ForgeUI P4](https://github.com/RTechAI/ForgeUI-P4) — ESP32-P4-focused ForgeUI work
+- [ESP32-P4 LVGL Boilerplate 3](https://github.com/RTechAI/ESP32-P4-LVGL-Boilerplate-3) — related ESP32-P4/LVGL boilerplate
 
-https://github.com/RTechAI/esp32p4-ui-studio
+## About ForgeUI
 
-Runtime:
+[ForgeUI](https://forgeui.co.nz) is developed by [RTechAI](https://github.com/RTechAI).
 
-https://github.com/RTechAI/ForgeUI-One
+ForgeUI Studio provides visual embedded UI/HMI development workflows for supported ESP32 hardware, while [ForgeUI Hosted Studio](https://studio.forgeui.co.nz) provides the hosted, browser-based Studio application.
 
-Author:
+RTechAI is the GitHub home for ForgeUI public repositories and reference work.
 
-Scott Forster
+## License and Third-Party Software
 
-📧 forgeui.esp32@gmail.com
+ForgeUI-owned code in this repository is covered by the root [ForgeUI Source Available License](LICENSE). Third-party components retain their own licenses and notices; see [THIRD_PARTY_LICENSES.md](THIRD_PARTY_LICENSES.md) and the applicable component distributions. In particular, `components/bsp_extra/LICENSE` is Apache-2.0.
+
+## Support
+
+For ForgeUI public repositories and reference work, visit [RTechAI on GitHub](https://github.com/RTechAI). For the current Studio ecosystem, visit [forgeui.co.nz](https://forgeui.co.nz) or [ForgeUI Hosted Studio](https://studio.forgeui.co.nz).
